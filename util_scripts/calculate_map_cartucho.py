@@ -26,15 +26,6 @@ parser.add_argument('--show_plots', help='Display and save plots showing precisi
 
 args = parser.parse_args()
 
-def plot_precision_recall(precision, recall, class_name, output_path):
-    plt.figure()
-    plt.plot(recall, precision, marker='.')
-    plt.title(f'Precision-Recall curve: {class_name}')
-    plt.xlabel('Recall')
-    plt.ylabel('Precision')
-    plt.savefig(f'{output_path}/{class_name}_pr_curve.png')
-    plt.close()
-
 labelmap = args.labels
 outputs_dir = args.outdir
 metric = args.metric
@@ -63,8 +54,26 @@ output_path = os.path.join(cwd,outputs_dir)
 labelmap_path = os.path.join(cwd,labelmap)
 
 if show_plots:
-    for class_name in class_names:
-        plot_precision_recall(precision[class_name], recall[class_name], class_name, output_path)
+    for classname in classes:
+        plt.figure()
+        plt.plot(iou_threshes, mAP_results[classname], marker='o')
+        plt.xlabel('IoU Threshold')
+        plt.ylabel('Average Precision (AP)')
+        plt.title(f'Precision-Recall Curve for {classname}')
+        plt.grid(True)
+        plot_path = os.path.join(output_path, f'{classname}_precision_recall_curve.png')
+        plt.savefig(plot_path)
+        plt.show()
+    
+    plt.figure()
+    plt.plot(iou_threshes, mAP_results['overall'], marker='o', color='r')
+    plt.xlabel('IoU Threshold')
+    plt.ylabel('Mean Average Precision (mAP)')
+    plt.title('Overall mAP')
+    plt.grid(True)
+    plot_path = os.path.join(output_path, 'overall_map.png')
+    plt.savefig(plot_path)
+    plt.show()
 
 # Define arguments to show images and plots (if desired by user)
 if show_imgs: show_img_arg = ''
