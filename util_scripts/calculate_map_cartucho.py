@@ -12,6 +12,7 @@ import os
 import sys
 import argparse
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Define and parse input arguments
 parser = argparse.ArgumentParser()
@@ -24,6 +25,15 @@ parser.add_argument('--show_images', help='Display and save images as they are e
 parser.add_argument('--show_plots', help='Display and save plots showing precision/recall curve, mAP score, etc', action='store_true') # Coming soon!
 
 args = parser.parse_args()
+
+def plot_precision_recall(precision, recall, class_name, output_path):
+    plt.figure()
+    plt.plot(recall, precision, marker='.')
+    plt.title(f'Precision-Recall curve: {class_name}')
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.savefig(f'{output_path}/{class_name}_pr_curve.png')
+    plt.close()
 
 labelmap = args.labels
 outputs_dir = args.outdir
@@ -51,6 +61,10 @@ else:
 cwd = os.getcwd()
 output_path = os.path.join(cwd,outputs_dir)
 labelmap_path = os.path.join(cwd,labelmap)
+
+if show_plots:
+    for class_name in class_names:
+        plot_precision_recall(precision[class_name], recall[class_name], class_name, output_path)
 
 # Define arguments to show images and plots (if desired by user)
 if show_imgs: show_img_arg = ''
